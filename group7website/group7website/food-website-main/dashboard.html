@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Online Food Ordering System</title>
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+    :root {
+        --primary-color: #ff6b6b;
+        --primary-hover: #ff5252;
+        --text-color: #333;
+        --light-gray: #f8f9fa;
+        --border-color: #ddd;
+        --dark-gray: #555;
+        --success-color: #2ecc71;
+        --error-color: #e74c3c;
+    }
+    
+    /* General Styling */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--light-gray);
+    }
+    
+    /* Header Styles */
+    .dashboard-header {
+        background-color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+    }
+    
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .logo img {
+        height: 36px;
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .cart-icon, .user-icon {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        top: 35px;
+        right: 0;
+        background-color: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 150px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    
+    .user-dropdown ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .user-dropdown ul li {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .user-dropdown ul li a {
+        color: #333;
+        text-decoration: none;
+        display: block;
+    }
+    
+    .user-dropdown ul li a:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .user-icon:hover .user-dropdown {
+        display: block;
+    }
+    
+    /* Main Content */
+    .dashboard-main {
+        max-width: 1200px;
+        margin: 80px auto 20px;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 30px;
+    }
+    
+    /* Menu Section */
+    .menu-section {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .section-title {
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: var(--text-color);
+        position: relative;
+        padding-bottom: 10px;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background-color: var(--primary-color);
+    }
+    
+    .menu-categories {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .category-btn {
+        padding: 8px 15px;
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+    
+    .category-btn.active, .category-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    /* Menu Items */
+    .menu-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    .menu-item {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+    
+    .menu-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .item-image {
+        height: 180px;
+        overflow: hidden;
+    }
+    
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .menu-item:hover .item-image img {
+        transform: scale(1.05);
+    }
+    
+    .item-details {
+        padding: 15px;
+    }
+    
+    .item-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    
+    .item-description {
+        color: var(--dark-gray);
+        font-size: 14px;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .item-price {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 18px;
+    }
+    
+    .add-to-cart {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .add-to-cart:hover {
+        background: var(--primary-hover);
+        transform: scale(1.1);
+    }
+    
+    /* Cart Sidebar */
+    .cart-sidebar {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+    }
+    
+    .cart-items {
+        margin: 20px 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .cart-item {
+        display: flex;
+        gap: 15px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    
+    .cart-item-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .cart-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    .cart-item-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+    
+    .cart-item-price {
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 5px;
+    }
+    
+    .quantity-btn {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: var(--light-gray);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .cart-item-quantity {
+        min-width: 20px;
+        text-align: center;
+    }
+    
+    .remove-item {
+        color: var(--error-color);
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-left: auto;
+    }
+    
+    .cart-summary {
+        margin-top: 20px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 20px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .total {
+        font-weight: 700;
+        font-size: 18px;
+    }
+    
+    .checkout-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .checkout-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 20px 0;
+        color: var(--dark-gray);
+    }
+    
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .modal.active {
+        display: flex;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        max-width: 600px;
+        width: 100%;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+        font-size: 22px;
+        color: var(--text-color);
+    }
+    
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    
+    /* Media Queries */
+    @media (max-width: 768px) {
+        .dashboard-main {
+            grid-template-columns: 1fr;
+        }
+    
+        .menu-categories {
+            flex-direction: column;
+            gap: 15px;
+        }
+    
+        .menu-items {
+            grid-template-columns: 1fr 1fr;
+        }
+    
+        .cart-sidebar {
+            position: static;
+            width: 100%;
+            margin-top: 20px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <i class="uil uil-check-circle"></i>
+        <span id="successText"></span>
+    </div>
+    
+<!-- Header -->
+<header class="dashboard-header">
+    <div class="header-container">
+        <div class="logo">
+            <img src="logo.png" alt="Restaurant Logo">
+        </div>
+        <div class="header-right">
+            <div class="cart-icon" id="cartIcon">
+                <i class="uil uil-shopping-bag"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+            <div class="user-icon" id="userIcon">
+                <i class="uil uil-user"></i>
+                <div class="user-dropdown" id="userDropdown">
+                    <ul>
+                        <li><a href="profile.html">Profile</a></li>
+                        <li><a href="orders.html">Orders</a></li>
+                        <li><a href="logout.html">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+    
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Menu Section -->
+        <section class="menu-section">
+            <h2 class="section-title">Our Menu</h2>
+            
+            <div class="menu-categories">
+                <button class="category-btn active" data-category="all">All Items</button>
+                <button class="category-btn" data-category="breakfast">Breakfast</button>
+                <button class="category-btn" data-category="lunch">Lunch</button>
+                <button class="category-btn" data-category="dinner">Dinner</button>
+                <button class="category-btn" data-category="desserts">Desserts</button>
+                <button class="category-btn" data-category="drinks">Drinks</button>
+            </div>
+            
+            <div class="menu-items" id="menuItems">
+                <!-- Menu items will be loaded here dynamically -->
+            </div>
+        </section>
+        
+        <!-- Cart Sidebar -->
+        <aside class="cart-sidebar">
+            <h2 class="section-title">Your Order</h2>
+            
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">
+                    <p>Your cart is empty</p>
+                    <i class="uil uil-shopping-cart-alt" style="font-size: 40px; color: #ccc; margin-top: 10px;"></i>
+                </div>
+            </div>
+            
+            <div class="cart-summary" id="cartSummary" style="display: none;">
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">Rs. 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Fee:</span>
+                    <span id="deliveryFee">Rs. 50</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="total">Rs. 50</span>
+                </div>
+                
+                <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Complete Your Order</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            
+            <form id="checkoutForm">
+                <!-- Delivery Address -->
+                <div class="form-group">
+                    <label for="deliveryAddress">Delivery Address</label>
+                    <textarea id="deliveryAddress" rows="3" placeholder="Enter your delivery address" required></textarea>
+                </div>
+                
+                <!-- Payment Method -->
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod" required>
+                        <option value="" disabled selected>Select Payment Method</option>
+                        <option value="gcash">GCash</option>
+                        <option value="cod">Cash on Delivery</option>
+                        <option value="card">Credit/Debit Card</option>
+                        <option value="upi">UPI Payment</option>
+                    </select>
+                </div>
+                
+                <!-- Card Details -->
+                <div class="form-group" id="cardDetails" style="display: none;">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" pattern="\d{16}" maxlength="16">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div>
+                            <label for="expiryDate">Expiry Date</label>
+                            <input type="text" id="expiryDate" placeholder="MM/YY" pattern="\d{2}/\d{2}" maxlength="5">
+                        </div>
+                        <div>
+                            <label for="cvv">CVV</label>
+                            <input type="text" id="cvv" placeholder="123" pattern="\d{3}" maxlength="3">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- UPI Details -->
+                <div class="form-group" id="upiDetails" style="display: none;">
+                    <label for="upiId">UPI ID</label>
+                    <input type="text" id="upiId" placeholder="yourname@upi" pattern="^[\w.-]+@[\w.-]+$">
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">Place Order</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Order Confirmation Modal -->
+    <div class="modal" id="confirmationModal">
+        <div class="modal-content" style="text-align: center;">
+            <div style="font-size: 60px; color: var(--success-color); margin-bottom: 20px;">
+                <i class="uil uil-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Order Placed Successfully!</h3>
+            <p style="margin: 20px 0;">Your order has been placed and will be delivered soon.</p>
+            <p style="font-weight: 600; margin-bottom: 20px;">Order ID: <span id="orderId">#123456</span></p>
+            <button class="submit-btn" id="continueShopping">Continue Shopping</button>
+        </div>
+    </div>
+
+    <script src="assets/js/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Sample menu data
+            const menuItems = [
+                {
+                    id: 1,
+                    name: "Chicken Adobo",
+                    description: "Chicken Adobo is a Filipino dish of chicken simmered in a savory and tangy soy sauce and vinegar mixture with garlic and spices.",
+                    price: 120,
+                    category: "lunch",
+                    image: "assets/images/menu/adobo.jpg"
+                },
+                {
+                    id: 2,
+                    name: "Chicken Inasal",
+                    description: "Chicken Inasal is a Filipino grilled chicken dish marinated in a mixture of vinegar, calamansi, garlic, lemongrass, and annatto oil, then grilled to smoky perfection.",
+                    price: 250,
+                    category: "dinner",
+                    image: "assets/images/menu/inasal.jpg"
+                },
+                {
+                    id: 3,
+                    name: "Lechon Karahai",
+                    description: "Lechon Kawali is a Filipino dish made of pork belly that’s boiled, seasoned, and deep-fried until golden and crispy on the outside while tender on the inside.",
+                    price: 220,
+                    category: "dinner",
+                    image: "assets/images/menu/karahai.jpg"
+                },
+                {
+                    id: 4,
+                    name: "Paneer Tikka",
+                    description: "Marinated cottage cheese grilled to perfection with bell peppers and onions",
+                    price: 180,
+                    category: "lunch",
+                    image: "assets/images/paneer-tikka.jpg"
+                },
+                {
+                    id: 5,
+                    name: "Gulab Jamun",
+                    description: "Soft milk-solid dumplings soaked in rose-flavored sugar syrup",
+                    price: 80,
+                    category: "desserts",
+                    image: "assets/images/gulab-jamun.jpg"
+                },
+                {
+                    id: 6,
+                    name: "Mango Lassi",
+                    description: "Refreshing yogurt-based drink with sweet mango pulp",
+                    price: 60,
+                    category: "drinks",
+                    image: "assets/images/mango-lassi.jpg"
+                },
+                {
+                    id: 7,
+                    name: "Idli Sambar",
+                    description: "Steamed rice cakes served with lentil soup and coconut chutney",
+                    price: 90,
+                    category: "breakfast",
+                    image: "assets/images/idli.jpg"
+                },
+                {
+                    id: 8,
+                    name: "Chole Bhature",
+                    description: "Spicy chickpea curry served with deep-fried bread",
+                    price: 150,
+                    category: "lunch",
+                    image: "assets/images/chole-bhature.jpg"
+                }
+            ];
+            
+            // Cart state
+            let cart = [];
+            
+            // Load menu items
+            function loadMenuItems(category = 'all') {
+                const filteredItems = category === 'all' 
+                    ? menuItems 
+                    : menuItems.filter(item => item.category === category);
+                
+                $('#menuItems').empty();
+                
+                if (filteredItems.length === 0) {
+                    $('#menuItems').html('<p>No items found in this category</p>');
+                    return;
+                }
+                
+                filteredItems.forEach(item => {
+                    $('#menuItems').append(`
+                        <div class="menu-item" data-id="${item.id}">
+                            <div class="item-image">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                            <div class="item-details">
+                                <h3 class="item-name">${item.name}</h3>
+                                <p class="item-description">${item.description}</p>
+                                <div class="item-footer">
+                                    <span class="item-price">Rs. ${item.price}</span>
+                                    <button class="add-to-cart" data-id="${item.id}">
+                                        <i class="uil uil-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+            }
+            
+            // Initialize menu
+            loadMenuItems();
+            
+            // Category filter
+            $('.category-btn').click(function() {
+                $('.category-btn').removeClass('active');
+                $(this).addClass('active');
+                const category = $(this).data('category');
+                loadMenuItems(category);
+            });
+            
+            // Add to cart
+            $(document).on('click', '.add-to-cart', function() {
+                const itemId = parseInt($(this).data('id'));
+                const item = menuItems.find(i => i.id === itemId);
+                
+                const existingItem = cart.find(i => i.id === itemId);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        ...item,
+                        quantity: 1
+                    });
+                }
+                
+                updateCart();
+                showSuccess('Item added to cart');
+            });
+            
+            // Update cart display
+            function updateCart() {
+                const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+                $('#cartCount').text(cartCount);
+                
+                if (cart.length === 0) {
+                    $('#cartItems').html(`
+                        <div class="empty-cart">
+                            <p>Your cart is empty</p>
+                            <i class="uil uil-shopping-cart-alt" style="font-size: 40px; color: #ccc; margin-top: 10px;"></i>
+                        </div>
+                    `);
+                    $('#cartSummary').hide();
+                    return;
+                }
+                
+                $('#cartSummary').show();
+                $('#cartItems').empty();
+                
+                let subtotal = 0;
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    subtotal += itemTotal;
+                    
+                    $('#cartItems').append(`
+                        <div class="cart-item" data-id="${item.id}">
+                            <div class="cart-item-img">
+                                <img src="${item.image}" alt="${item.name}">
+                            </div>
+                            <div class="cart-item-details">
+                                <h4 class="cart-item-name">${item.name}</h4>
+                                <span class="cart-item-price">Rs. ${item.price}</span>
+                                <div class="cart-item-controls">
+                                    <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                                    <span class="cart-item-quantity">${item.quantity}</span>
+                                    <button class="quantity-btn plus" data-id="${item.id}">+</button>
+                                    <button class="remove-item" data-id="${item.id}">
+                                        <i class="uil uil-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                });
+                
+                const deliveryFee = 50;
+                const total = subtotal + deliveryFee;
+                
+                $('#subtotal').text(`Rs. ${subtotal}`);
+                $('#total').text(`Rs. ${total}`);
+            }
+            
+            // Cart quantity controls
+            $(document).on('click', '.minus', function() {
+                const itemId = parseInt($(this).data('id'));
+                const item = cart.find(i => i.id === itemId);
+                
+                if (item.quantity > 1) {
+                    item.quantity -= 1;
+                    updateCart();
+                }
+            });
+            
+            $(document).on('click', '.plus', function() {
+                const itemId = parseInt($(this).data('id'));
+                const item = cart.find(i => i.id === itemId);
+                
+                item.quantity += 1;
+                updateCart();
+            });
+            
+            // Remove item from cart
+            $(document).on('click', '.remove-item', function() {
+                const itemId = parseInt($(this).data('id'));
+                cart = cart.filter(i => i.id !== itemId);
+                updateCart();
+                showSuccess('Item removed from cart');
+            });
+            
+            // Checkout button
+            $('#checkoutBtn').click(function() {
+                if (cart.length === 0) return;
+                $('#checkoutModal').css('display', 'flex');
+            });
+            
+            // Close modal
+            $('#closeModal').click(function() {
+                $('#checkoutModal').hide();
+            });
+            
+            // Payment method toggle
+            $('#paymentMethod').change(function() {
+                const method = $(this).val();
+                $('#cardDetails, #upiDetails').hide();
+                
+                if (method === 'card') {
+                    $('#cardDetails').show();
+                } else if (method === 'upi') {
+                    $('#upiDetails').show();
+                }
+            });
+            
+            // Place order
+            $('#checkoutForm').submit(function(e) {
+                e.preventDefault();
+                
+                // In a real app, you would send this data to your backend
+                const orderData = {
+                    items: cart,
+                    address: $('#deliveryAddress').val(),
+                    paymentMethod: $('#paymentMethod').val(),
+                    cardDetails: $('#paymentMethod').val() === 'card' ? {
+                        cardNumber: $('#cardNumber').val(),
+                        expiryDate: $('#expiryDate').val(),
+                        cvv: $('#cvv').val()
+                    } : null,
+                    upiId: $('#paymentMethod').val() === 'upi' ? $('#upiId').val() : null,
+                    orderDate: new Date().toISOString(),
+                    status: 'pending'
+                };
+                
+                console.log('Order placed:', orderData);
+                
+                // Generate random order ID
+                const orderId = '#' + Math.floor(100000 + Math.random() * 900000);
+                $('#orderId').text(orderId);
+                
+                // Show confirmation
+                $('#checkoutModal').hide();
+                $('#confirmationModal').css('display', 'flex');
+                
+                // Clear cart
+                cart = [];
+                updateCart();
+                
+                // Reset form
+                $('#checkoutForm')[0].reset();
+            });
+            
+            // Continue shopping
+            $('#continueShopping').click(function() {
+                $('#confirmationModal').hide();
+            });
+            
+            // Show success message
+            function showSuccess(message) {
+                $('#successText').text(message);
+                $('#successMessage').addClass('show');
+                
+                setTimeout(() => {
+                    $('#successMessage').removeClass('show');
+                }, 3000);
+            }
+            
+            // Close modals when clicking outside
+            $(window).click(function(event) {
+                if ($(event.target).hasClass('modal')) {
+                    $('.modal').hide();
+                }
+            });
+        });
+
+        document.getElementById('userIcon').addEventListener('click', function () {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close the dropdown if clicked outside
+document.addEventListener('click', function (event) {
+    if (!event.target.closest('.user-icon')) {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        }
+    }
+});
+
+    </script>
+</body>
+</html>
